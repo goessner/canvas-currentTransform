@@ -3,8 +3,6 @@
  * @author Stefan Goessner (c) 2015
  */
 
-// test modification via github !!
-
 /**
  * extend CanvasRenderingContext2D.prototype by current transformation matrix access.
  */
