@@ -92,8 +92,8 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
             var t = this._t2stack[this._t2stack.length-1];
             sx = sx || 1;
             sy = sy || sx;
-            t.a *= sx; t.c *= sx; t.e *= sx;
-            t.b *= sy; t.d *= sy; t.f *= sy;
+            t.a *= sx; t.c *= sx;
+            t.b *= sy; t.d *= sy;
             scale.call(this,sx,sy);
          }
       }();
@@ -116,7 +116,8 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
             if (!this._t2stack)
                this._t2stack = [{a:1,b:0,c:0,d:1,e:0,f:0}];
             var t = this._t2stack[this._t2stack.length-1];
-            t.e += x; t.f += y;
+            t.e += x*t.a + y*t.c;
+            t.f += x*t.b + y*t.d;
             return translate.call(this,x,y);
          }
       }();
