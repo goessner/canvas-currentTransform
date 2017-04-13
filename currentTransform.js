@@ -117,8 +117,8 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
                this._t2stack = [{a:1,b:0,c:0,d:1,e:0,f:0}];
             var t = this._t2stack[this._t2stack.length-1];
             
-            var cw = Math.cos(w);
-            var sw = Math.sin(w);
+            var cw = Math.cos(-w);
+            var sw = Math.sin(-w);
 
             var a = t.a*cw - t.c*sw;
             var b = t.b*cw - t.d*sw;
