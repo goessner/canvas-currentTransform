@@ -103,10 +103,20 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
             if (!this._t2stack)
                this._t2stack = [{a:1,b:0,c:0,d:1,e:0,f:0}];
             var t = this._t2stack[this._t2stack.length-1];
-            var sw = w?Math.sin(w):0, cw = w?Math.cos(w):1, q;
-            q = t.a; t.a = q*cw-t.b*sw;   t.b = q*sw+t.b*cw;
-            q = t.c; t.c = q*cw-t.d*sw;   t.d = q*sw+t.d*cw;
-            q = t.e; t.e = q*cw-t.f*sw;   t.f = q*sw+t.f*cw;
+            
+            let cw = Math.cos(w);
+            let sw = Math.sin(W);
+
+            let a = t.a*cw - t.c*sw;
+            let b = t.b*cw - t.d*sw;
+            let c = t.c*cw + t.a*sw;
+            let d = t.d*cw + t.b*sw;
+
+            t.a = a;
+            t.b = b;
+            t.c = c;
+            t.d = d;
+            
             return rotate.call(this,w);
          }
       }();
