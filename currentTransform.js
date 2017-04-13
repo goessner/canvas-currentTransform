@@ -60,9 +60,22 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
             if (!this._t2stack)
                this._t2stack = [{a:1,b:0,c:0,d:1,e:0,f:0}];
             var t = this._t2stack[this._t2stack.length-1], q;
-            q = t.a; t.a = a*q+c*t.b,   t.b = b*q+d*t.b;
-            q = t.c; t.c = a*q+c*t.d,   t.d = b*q+d*t.d;
-            q = t.e; t.e = a*q+c*t.f+e; t.f = b*q+d*t.f+f;
+
+            var na = t.a*a + t.c * b;
+            var nb = t.b*a + t.d * b;
+
+            var nc = t.a*c + t.c * d;
+            var nd = t.b*c + t.d * d;
+
+            var ne = t.e + t.a*e + t.c*f;
+            var nf = t.f + t.b*e + t.d*f;
+
+            t.a = na;
+            t.b = nb;
+            t.c = nc;
+            t.d = nd;
+            t.e = ne;
+            t.f = nf;
             transform.call(this,a,b,c,d,e,f);
          }
       }();
