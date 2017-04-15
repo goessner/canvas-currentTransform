@@ -28,7 +28,7 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
    }
    else {  // fully implement it ... hmm ... 'currentTransform', 'save()', 'restore()', 'transform()', 'setTransform()', 'resetTransform()'
       Object.defineProperty(CanvasRenderingContext2D.prototype, "currentTransform", {
-         get : function() { return this._t2stack && this._t2stack[this._t2stack.length-1] || {a:1,b:0,c:0,d:1,e:0,f:0}; },
+         get : function() {return this._t2stack && this._t2stack[this._t2stack.length-1] || {a:1,b:0,c:0,d:1,e:0,f:0};},
          set : function(x) {
             if (!this._t2stack)
                this._t2stack = [{}];
@@ -105,8 +105,8 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
             var t = this._t2stack[this._t2stack.length-1];
             sx = sx || 1;
             sy = sy || sx;
-            t.a *= sx; t.c *= sx;
-            t.b *= sy; t.d *= sy;
+            t.a *= sx; t.c *= sy;
+            t.b *= sx; t.d *= sy;
             scale.call(this,sx,sy);
          }
       }();
@@ -116,7 +116,7 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
             if (!this._t2stack)
                this._t2stack = [{a:1,b:0,c:0,d:1,e:0,f:0}];
             var t = this._t2stack[this._t2stack.length-1];
-            
+
             var cw = Math.cos(-w);
             var sw = Math.sin(-w);
 
@@ -129,7 +129,7 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
             t.b = b;
             t.c = c;
             t.d = d;
-            
+
             return rotate.call(this,w);
          }
       }();
