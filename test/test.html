@@ -1,0 +1,104 @@
+<body onload="runTest()">
+<script>
+var maxDelta = 0;
+
+//for debug use
+var maxDeltaCmdId = -1;
+var commands = [];
+
+// rename
+if ("mozCurrentTransform" in CanvasRenderingContext2D.prototype) {
+   Object.defineProperty(CanvasRenderingContext2D.prototype, "currentTransformNative", Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, "mozCurrentTransform"));
+}else{
+  throw 'please run this test under firefox'
+}
+//remove
+delete CanvasRenderingContext2D.prototype["mozCurrentTransform"];
+
+
+function runTest(){
+  maxDelta = 0;
+  commands = [];
+
+  var ctx = document.getElementById('canvas').getContext('2d');
+
+  var numIter = 10000;
+  var stackSize = 0;
+
+  function arg(){
+    return (Math.random()*2 - 1)*10;
+  }
+
+  function angle(){
+    return (Math.random()*2 - 1)*Math.PI*4;
+  }
+
+  for(var i = 0; i < numIter; i++){
+    //chose random command
+    var cmd = Math.random();
+
+    if(cmd < 1/7){
+      ctx.save();
+      stackSize++;
+      commands.push("save");
+    }else if(cmd < 2/7 && stackSize > 0){
+      ctx.restore();
+      stackSize--;
+      commands.push("restore");
+    }else if(cmd < 3/7){
+      ctx.transform(arg(),arg(),arg(),arg(),arg(),arg());
+      commands.push("transform");
+    }else if(cmd < 4/7){
+      ctx.setTransform(arg(),arg(),arg(),arg(),arg(),arg());
+      commands.push("setTransform");
+    }else if (cmd < 5/7){
+      ctx.scale(arg(),arg());
+      commands.push("scale");
+    }else if (cmd < 6/7){
+      ctx.rotate(angle());
+      commands.push("rotate");
+    }else if(cmd < 7/7){
+      ctx.translate(arg(),arg());
+      commands.push("translate");
+    }
+    compare(ctx.currentTransformNative, ctx.currentTransform, i)
+
+    // prevent too much error propagation
+    if(i % 10 == 0) ctx.resetTransform();
+  }
+
+  var msg = "got a maximum delta of : " + (100*maxDelta) + "<b> %</b> after " + numIter + " calls; when using "+commands[maxDeltaCmdId]+".<br/>";
+  document.getElementById('result').innerHTML = msg;
+}
+
+function compare(native, polyfill, i){
+  //NOTE: the moz-native function returns an array.
+  checkDelta(native[0],polyfill.a, i);
+  checkDelta(native[1],polyfill.b, i);
+  checkDelta(native[2],polyfill.c, i);
+  checkDelta(native[3],polyfill.d, i);
+  checkDelta(native[4],polyfill.e, i);
+  checkDelta(native[5],polyfill.f, i);
+
+}
+
+function checkDelta(sa,sb,i){
+  var a = Math.abs(sa);
+  var b = Math.abs(sb);
+
+  var d = (a-b)/((a+b)/2);
+  if(d > maxDelta){
+    maxDelta = d;
+    maxDeltaCmdId = i;
+  }
+
+  if(d > 1){
+    console.error("Bug in polyfill!");
+  }
+}
+
+</script>
+<script src="../currentTransform.js"></script>
+<canvas id="canvas"></canvas>
+<p id="result">please run this test under firefox</p>
+</body>
