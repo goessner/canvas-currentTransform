@@ -67,7 +67,16 @@ function runTest(){
     if(i % 10 == 0) ctx.resetTransform();
   }
 
-  var msg = "got a maximum delta of : " + (100*maxDelta) + "<b> %</b> after " + numIter + " calls; when using "+commands[maxDeltaCmdId]+".<br/>";
+  var msg = "got a maximum difference of " + (100*maxDelta) +
+            "<b> %</b> between native and polyfill after 10 random calls "+
+            "and " + (numIter/10) + " iterations. The maximum difference was after calling '"+commands[maxDeltaCmdId]+"'.<br/>";
+
+  // 2% should be ok
+  if(maxDelta < 0.02){
+    msg += "<b style='color: green;'>The test passed!</b>"
+  }else{
+    msg += "<b style='color: red;'>The test failed!</b>"
+  }
   document.getElementById('result').innerHTML = msg;
 }
 
