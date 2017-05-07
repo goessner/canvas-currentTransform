@@ -22,20 +22,20 @@ function runTest(){
 
   var ctx = document.getElementById('canvas').getContext('2d');
 
-  var numIter = 10000;
+  var numIter = 100000;
   var stackSize = 0;
 
   function arg(){
-    return (Math.random()*2 - 1)*10;
+    return (random()*2 - 1)*10;
   }
 
   function angle(){
-    return (Math.random()*2 - 1)*Math.PI*4;
+    return (random()*2 - 1)*Math.PI*4;
   }
 
   for(var i = 0; i < numIter; i++){
     //chose random command
-    var cmd = Math.random();
+    var cmd = random();
 
     if(cmd < 1/7){
       ctx.save();
@@ -64,12 +64,12 @@ function runTest(){
     compare(ctx.currentTransformNative, ctx.currentTransform, i)
 
     // prevent too much error propagation
-    if(i % 10 == 0) ctx.resetTransform();
+    if(i % 15 == 0) ctx.resetTransform();
   }
 
   var msg = "got a maximum difference of " + (100*maxDelta) +
-            "<b> %</b> between native and polyfill after 10 random calls "+
-            "and " + (numIter/10) + " iterations. The maximum difference was after calling '"+commands[maxDeltaCmdId]+"'.<br/>";
+            "<b> %</b> between native and polyfill after 15 random calls "+
+            "and " + Math.floor(numIter/15) + " iterations. The maximum difference was after calling '"+commands[maxDeltaCmdId]+"'.<br/>";
 
   // 2% should be ok
   if(maxDelta < 0.02){
@@ -81,7 +81,7 @@ function runTest(){
 }
 
 function compare(native, polyfill, i){
-  //NOTE: the moz-native function returns an array.
+  //NOTE: the moz-native seedfunction returns an array.
   checkDelta(native[0],polyfill.a, i);
   checkDelta(native[1],polyfill.b, i);
   checkDelta(native[2],polyfill.c, i);
@@ -104,6 +104,14 @@ function checkDelta(sa,sb,i){
   if(d > 1){
     console.error("Bug in polyfill!");
   }
+}
+
+
+// use deterministic pseudo random numbers
+var seed = 2711;
+function random() {
+    seed = Math.pow(seed^9465, 5) % 1500450271;
+    return seed/1500450271.0;
 }
 
 </script>
