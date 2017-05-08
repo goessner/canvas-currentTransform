@@ -28,7 +28,7 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
    }
    else {  // fully implement it ... hmm ... 'currentTransform', 'save()', 'restore()', 'transform()', 'setTransform()', 'resetTransform()'
       Object.defineProperty(CanvasRenderingContext2D.prototype, "currentTransform", {
-         get : function() { return this._t2stack && this._t2stack[this._t2stack.length-1] || {a:1,b:0,c:0,d:1,e:0,f:0}; },
+         get : function() {return this._t2stack && this._t2stack[this._t2stack.length-1] || {a:1,b:0,c:0,d:1,e:0,f:0};},
          set : function(x) {
             if (!this._t2stack)
                this._t2stack = [{}];
@@ -60,9 +60,22 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
             if (!this._t2stack)
                this._t2stack = [{a:1,b:0,c:0,d:1,e:0,f:0}];
             var t = this._t2stack[this._t2stack.length-1], q;
-            q = t.a; t.a = a*q+c*t.b,   t.b = b*q+d*t.b;
-            q = t.c; t.c = a*q+c*t.d,   t.d = b*q+d*t.d;
-            q = t.e; t.e = a*q+c*t.f+e; t.f = b*q+d*t.f+f;
+
+            var na = t.a*a + t.c * b;
+            var nb = t.b*a + t.d * b;
+
+            var nc = t.a*c + t.c * d;
+            var nd = t.b*c + t.d * d;
+
+            var ne = t.e + t.a*e + t.c*f;
+            var nf = t.f + t.b*e + t.d*f;
+
+            t.a = na;
+            t.b = nb;
+            t.c = nc;
+            t.d = nd;
+            t.e = ne;
+            t.f = nf;
             transform.call(this,a,b,c,d,e,f);
          }
       }();
@@ -92,8 +105,8 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
             var t = this._t2stack[this._t2stack.length-1];
             sx = sx || 1;
             sy = sy || sx;
-            t.a *= sx; t.c *= sx; t.e *= sx;
-            t.b *= sy; t.d *= sy; t.f *= sy;
+            t.a *= sx; t.c *= sy;
+            t.b *= sx; t.d *= sy;
             scale.call(this,sx,sy);
          }
       }();
@@ -103,10 +116,20 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
             if (!this._t2stack)
                this._t2stack = [{a:1,b:0,c:0,d:1,e:0,f:0}];
             var t = this._t2stack[this._t2stack.length-1];
-            var sw = w?Math.sin(w):0, cw = w?Math.cos(w):1, q;
-            q = t.a; t.a = q*cw-t.b*sw;   t.b = q*sw+t.b*cw;
-            q = t.c; t.c = q*cw-t.d*sw;   t.d = q*sw+t.d*cw;
-            q = t.e; t.e = q*cw-t.f*sw;   t.f = q*sw+t.f*cw;
+
+            var cw = Math.cos(-w);
+            var sw = Math.sin(-w);
+
+            var a = t.a*cw - t.c*sw;
+            var b = t.b*cw - t.d*sw;
+            var c = t.c*cw + t.a*sw;
+            var d = t.d*cw + t.b*sw;
+
+            t.a = a;
+            t.b = b;
+            t.c = c;
+            t.d = d;
+
             return rotate.call(this,w);
          }
       }();
@@ -116,7 +139,8 @@ if (!("currentTransform" in CanvasRenderingContext2D.prototype)) {
             if (!this._t2stack)
                this._t2stack = [{a:1,b:0,c:0,d:1,e:0,f:0}];
             var t = this._t2stack[this._t2stack.length-1];
-            t.e += x; t.f += y;
+            t.e += x*t.a + y*t.c;
+            t.f += x*t.b + y*t.d;
             return translate.call(this,x,y);
          }
       }();
